@@ -7,7 +7,14 @@ import (
 type Order struct {
 	ID        int
 	UserID    int
-	Total     float64
 	Status    string
 	CreatedAt time.Time
+}
+
+type OrderItem struct {
+	ID        int
+	OrderID   int
+	ProductID int
+	Quantity  int
+	Price     float64
 }

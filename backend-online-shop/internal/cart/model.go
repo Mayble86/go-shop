@@ -1,13 +1,11 @@
 package cart
 
-type Cart struct {
-	ID     int
-	UserID int
-}
+import "time"
 
 type CartItem struct {
 	ID        int
-	CartID    int
+	UserID    int
 	ProductID int
 	Quantity  int
+	CreatedAt time.Time
 }

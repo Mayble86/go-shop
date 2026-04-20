@@ -30,10 +30,12 @@ func (r *Repository) Create(p *Product) error {
 
 func (r *Repository) GetAll() ([]Product, error) {
 	rows, err := r.db.Query(`
-	SELECT id, name, description, price, category_id, created_at
-	FROM products
+		SELECT 
+			p.id, p.name, p.description, p.price, p.category_id, p.created_at,
+			c.id, c.name
+		FROM products p
+		LEFT JOIN categories c ON p.category_id = c.id
 	`)
-
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +45,7 @@ func (r *Repository) GetAll() ([]Product, error) {
 
 	for rows.Next() {
 		var p Product
+
 		err := rows.Scan(
 			&p.ID,
 			&p.Name,
@@ -50,6 +53,8 @@ func (r *Repository) GetAll() ([]Product, error) {
 			&p.Price,
 			&p.CategoryID,
 			&p.CreatedAt,
+			&p.Category.ID,
+			&p.Category.Name,
 		)
 
 		if err != nil {

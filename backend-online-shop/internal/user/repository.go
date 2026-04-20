@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"errors"
 	"log"
 )
 
@@ -40,10 +39,44 @@ func (r *Repository) GetByEmail(email string) (*User, error) {
 	`
 	err := r.db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.RoleID, &user.CreatedAt)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *Repository) GetAll() ([]User, error) {
+	query := `
+	SELECT id, email, password, role_id, created_at
+	FROM users
+	`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := make([]User, 0)
+
+	for rows.Next() {
+		var u User
+
+		err := rows.Scan(
+			&u.ID,
+			&u.Email,
+			&u.Password,
+			&u.RoleID,
+			&u.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, u)
+	}
+
+	return users, nil
 }
